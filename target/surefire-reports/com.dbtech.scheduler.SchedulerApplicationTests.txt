@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.dbtech.scheduler.SchedulerApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.546 s - in com.dbtech.scheduler.SchedulerApplicationTests
