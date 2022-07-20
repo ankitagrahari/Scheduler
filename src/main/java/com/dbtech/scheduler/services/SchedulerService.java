@@ -15,20 +15,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-
 @Service
 public class SchedulerService {
 
     private static final Logger log = LoggerFactory.getLogger(SchedulerService.class);
-
-    @Autowired
-    TaskScheduler taskScheduler;
-    
-    @Autowired
-    WebClient webClient;
-    
+    private TaskScheduler taskScheduler;
+    private WebClient webClient;
     private Map<String, Job> schedulerMap = new HashMap<>();
 
+    @Autowired
+    SchedulerService(TaskScheduler taskScheduler, WebClient webClient){
+        this.taskScheduler = taskScheduler;
+        this.webClient = webClient;
+    }
+
+    public Map<String, Job> getScheduledJobs(){
+        return schedulerMap;
+    }
+    
+    public void deleteScheduledJob(String jobId) {
+        if(schedulerMap.containsKey(jobId))
+            schedulerMap.remove(jobId);
+        else
+            log.error("No jobs exists with Id:"+ jobId);
+    }
+    
     public void scheduleGetJob(Job job) {
         log.info("scheduling get job:"+ job.toString());
         taskScheduler.schedule(
@@ -71,21 +82,5 @@ public class SchedulerService {
                 new CronTrigger(job.getCron(), TimeZone.getTimeZone(TimeZone.getDefault().toZoneId()))
         );
         schedulerMap.put(job.getJobName() + "-" + System.currentTimeMillis(), job);
-    }
-    
-    public Map<String, Job> getScheduledJobs(){
-        return schedulerMap;
-    }
-
-    public void deleteScheduledJob(String jobId) {
-        if(schedulerMap.containsKey(jobId))
-            schedulerMap.remove(jobId);
-        else
-            log.error("No jobs exists with Id:"+ jobId);
-    }
-
-    @Scheduled(fixedDelayString = "${fixedDelay.in.millisec}")
-    public void task(){
-        System.out.println("Every 10 seconds");
     }
 }
